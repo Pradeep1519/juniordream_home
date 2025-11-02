@@ -14,11 +14,35 @@ export function GlassNavbar() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [showNavbar, setShowNavbar] = useState(true);
   
+  // ✅ NEW: Check if we're on onboarding/form page
+  const [isOnboardingPage, setIsOnboardingPage] = useState(false);
+
   const { scrollY } = useScroll();
   const navBlur = useTransform(scrollY, [0, 100], [0, 20]);
   const navOpacity = useTransform(scrollY, [0, 100], [0.7, 0.95]);
 
   useEffect(() => {
+    // ✅ NEW: Check current page for onboarding
+    const checkOnboardingPage = () => {
+      const isOnboarding = 
+        window.location.hash === '#join' || 
+        window.location.hash === '#onboarding' ||
+        window.location.pathname.includes('form') ||
+        window.location.pathname.includes('onboarding') ||
+        document.querySelector('.parent-onboarding-flow') !== null; // Form component check
+      
+      setIsOnboardingPage(isOnboarding);
+    };
+
+    checkOnboardingPage();
+    
+    // Also check on hash change
+    const handleHashChange = () => {
+      checkOnboardingPage();
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       setScrolled(currentScrollY > 20);
@@ -36,8 +60,16 @@ export function GlassNavbar() {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('hashchange', handleHashChange);
+    };
   }, [lastScrollY]);
+
+  // ✅ NEW: Agar onboarding page hai to navbar hide karo
+  if (isOnboardingPage) {
+    return null;
+  }
 
   const navLinks = [
     { name: 'Features', href: '#features' },
@@ -50,11 +82,7 @@ export function GlassNavbar() {
   return (
     <>
       <motion.nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
-          scrolled 
-            ? 'py-3' 
-            : 'py-4'
-        }`}
+        className="fixed top-0 left-0 right-0 z-50 h-20 transition-all duration-700"
         style={{ 
           backdropFilter: scrolled ? 'blur(20px) saturate(180%)' : 'blur(8px) saturate(150%)',
         }}
@@ -92,8 +120,8 @@ export function GlassNavbar() {
           transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
         />
 
-        <div className="container mx-auto px-4 sm:px-6 relative z-10">
-          <div className="flex items-center justify-between h-16">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10 h-full">
+          <div className="flex items-center justify-between h-full">
             {/* Logo - Left Side */}
             <motion.button
               onClick={() => window.location.hash = '#home'}
@@ -241,7 +269,7 @@ export function GlassNavbar() {
             />
             
             <motion.div
-              className="fixed top-20 left-4 right-4 z-50 lg:hidden bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 overflow-hidden"
+              className="fixed top-24 left-4 right-4 z-50 lg:hidden bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 overflow-hidden"
               initial={{ opacity: 0, y: -20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}

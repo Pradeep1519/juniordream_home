@@ -130,7 +130,7 @@ export function PremiumFooter() {
             <div className="space-y-3 text-sm">
               <div className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition-colors">
                 <Mail className="w-4 h-4" />
-                <span>hello@juniordream.com</span>
+                <span>Info@juniordream.com</span>
               </div>
               <div className="flex items-center gap-3 text-gray-600 hover:text-blue-600 transition-colors">
                 <Phone className="w-4 h-4" />

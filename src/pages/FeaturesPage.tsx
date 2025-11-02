@@ -97,7 +97,7 @@ export function FeaturesPage() {
         </motion.div>
 
         {/* Features Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
@@ -115,23 +115,6 @@ export function FeaturesPage() {
             </motion.div>
           ))}
         </div>
-
-        {/* CTA Section */}
-        <motion.div
-          className="text-center p-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 shadow-2xl shadow-blue-200/50"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <h2 className="text-4xl mb-4 text-white font-bold">Ready to get started?</h2>
-          <p className="text-xl text-white/90 mb-8">Join thousands of students already learning from the best</p>
-          <button
-            onClick={() => (window.location.hash = '#join')}
-            className="px-10 py-4 bg-white text-blue-600 rounded-xl font-semibold hover:shadow-2xl transition-all duration-300"
-          >
-            Start Your Journey
-          </button>
-        </motion.div>
       </div>
     </div>
   );

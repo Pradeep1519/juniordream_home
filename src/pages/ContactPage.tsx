@@ -48,19 +48,19 @@ export function ContactPage() {
                 {
                   icon: Mail,
                   title: 'Email',
-                  value: 'hello@juniordream.com',
+                  value: 'info@juniordream.com',
                   color: 'from-blue-500 to-cyan-500',
                 },
                 {
                   icon: Phone,
                   title: 'Phone',
-                  value: '+91 98765 43210',
+                  value: '+91 8448777696',
                   color: 'from-purple-500 to-pink-500',
                 },
                 {
                   icon: MapPin,
                   title: 'Office',
-                  value: 'Bangalore, Karnataka, India',
+                  value: 'Noida, Uttar Pradesh, India',
                   color: 'from-orange-500 to-red-500',
                 },
               ].map((contact, i) => (

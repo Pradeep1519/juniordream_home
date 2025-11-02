@@ -21,6 +21,9 @@ import { TermsPage } from './pages/TermsPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { FAQPage } from './pages/FAQPage';
 import { ParentOnboardingFlow } from './pages/OnboardingFlow';
+import { PaymentPage } from './pages/PaymentPage';
+import { EnrollmentForm } from './components/EnrollmentForm';
+import { SuccessPage } from './components/SuccessPage';
 
 // Homepage component
 function HomePage() {
@@ -35,8 +38,31 @@ function HomePage() {
   );
 }
 
+// Enrollment Flow Types
+interface PlanDetails {
+  name: string;
+  classRange: string;
+  monthlyFee: string;
+  annualFee: string;
+  color: string;
+  buttonColor: string;
+}
+
+interface EnrollmentData {
+  studentName: string;
+  currentClass: string;
+  schoolName: string;
+  careerGoal: string;
+  parentName: string;
+  phone: string;
+  preferredBatch: string;
+}
+
 export default function App() {
   const [currentPage, setCurrentPage] = useState('home');
+  const [enrollmentFlow, setEnrollmentFlow] = useState<'pricing' | 'enrollment' | 'payment' | 'success'>('pricing');
+  const [selectedPlan, setSelectedPlan] = useState<PlanDetails | null>(null);
+  const [enrollmentData, setEnrollmentData] = useState<EnrollmentData | null>(null);
 
   useEffect(() => {
     // Handle hash changes for navigation
@@ -52,6 +78,60 @@ export default function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
+  // Handle enrollment flow
+  const handleEnrollClick = (plan: PlanDetails) => {
+    setSelectedPlan(plan);
+    setEnrollmentFlow('enrollment');
+  };
+
+  const handleEnrollmentComplete = (data: any) => {
+    setEnrollmentData(data);
+    setEnrollmentFlow('payment');
+  };
+
+  const handlePaymentSuccess = () => {
+    setEnrollmentFlow('success');
+  };
+
+  const handleBackToHome = () => {
+    setEnrollmentFlow('pricing');
+    setCurrentPage('home');
+  };
+
+  // Render enrollment flow
+  const renderEnrollmentFlow = () => {
+    switch (enrollmentFlow) {
+      case 'enrollment':
+        return (
+          <EnrollmentForm
+            selectedPlan={selectedPlan!}
+            onComplete={handleEnrollmentComplete}
+            onBack={() => setEnrollmentFlow('pricing')}
+          />
+        );
+      case 'payment':
+        return (
+          <PaymentPage
+            plan={selectedPlan!}
+            formData={enrollmentData!}
+            billingCycle="monthly"
+            onBack={() => setEnrollmentFlow('enrollment')}
+            onPaymentSuccess={handlePaymentSuccess}
+          />
+        );
+      case 'success':
+        return (
+          <SuccessPage
+            studentName={enrollmentData!.studentName}
+            planName={selectedPlan!.name}
+            onBackToHome={handleBackToHome}
+          />
+        );
+      default:
+        return <PricingPage onEnrollClick={handleEnrollClick} />;
+    }
+  };
+
   // Render page based on current route
   const renderPage = () => {
     switch (currentPage) {
@@ -64,7 +144,7 @@ export default function App() {
       case 'mentors':
         return <MentorsPage />;
       case 'pricing':
-        return <PricingPage />;
+        return renderEnrollmentFlow();
       case 'about':
         return <AboutPage />;
       case 'careers':
@@ -90,13 +170,13 @@ export default function App() {
 
   return (
     <div className="relative bg-white text-gray-900 overflow-hidden">
-      {/* Main content */}
-      <GlassNavbar />
+      {/* Show navbar only if not in enrollment flow */}
+      {enrollmentFlow === 'pricing' && <GlassNavbar />}
       
       {renderPage()}
 
-      {/* Show footer on all pages except onboarding */}
-      {currentPage !== 'join' && <PremiumFooter />}
+      {/* Show footer only if not in enrollment flow and not on onboarding */}
+      {enrollmentFlow === 'pricing' && currentPage !== 'join' && <PremiumFooter />}
     </div>
   );
 }
